@@ -16,7 +16,6 @@ const Modal = ({ onClose, link }) => {
       enableBodyScroll(modalRoot);
     };
   });
-
   const onEscPress = event => {
     if (event.code === 'Escape') {
       onClose();
