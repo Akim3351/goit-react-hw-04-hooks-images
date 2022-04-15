@@ -1,42 +1,50 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import propTypes from 'prop-types';
 import css from './Modal.module.css';
 
 const modalRoot = document.querySelector('#modal-root');
 
-class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onEscPress);
-  }
+const Modal = ({ onClose, link }) => {
+  useEffect(() => {
+    window.addEventListener('keydown', onEscPress);
+    disableBodyScroll(modalRoot);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onEscPress);
-  }
+    return () => {
+      window.removeEventListener('keydown', onEscPress);
+      enableBodyScroll(modalRoot);
+    };
+  });
+  // componentDidMount() {
+  //   window.addEventListener('keydown', this.onEscPress);
+  // }
 
-  onEscPress = event => {
+  // componentWillUnmount() {
+  //   window.removeEventListener('keydown', this.onEscPress);
+  // }
+
+  const onEscPress = event => {
     if (event.code === 'Escape') {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  onBackdropClick = event => {
+  const onBackdropClick = event => {
     if (event.currentTarget === event.target) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    return createPortal(
-      <div className={css.overlay} onClick={this.onBackdropClick}>
-        <div className={css.modal}>
-          <img src={this.props.link} alt="img" />
-        </div>
-      </div>,
-      modalRoot
-    );
-  }
-}
+  return createPortal(
+    <div className={css.overlay} onClick={onBackdropClick}>
+      <div className={css.modal}>
+        <img src={link} alt="img" />
+      </div>
+    </div>,
+    modalRoot
+  );
+};
 
 Modal.propTypes = {
   link: propTypes.string.isRequired,
