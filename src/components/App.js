@@ -55,6 +55,7 @@ const App = () => {
           setStatus('rejected');
         });
     }
+    // eslint-disable-next-line
   }, [searchQuery, page]);
 
   const onSubmit = value => {
