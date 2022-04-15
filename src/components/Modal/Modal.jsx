@@ -16,14 +16,6 @@ const Modal = ({ onClose, link }) => {
       enableBodyScroll(modalRoot);
     };
   });
-  // componentDidMount() {
-  //   window.addEventListener('keydown', this.onEscPress);
-  // }
-
-  // componentWillUnmount() {
-  //   window.removeEventListener('keydown', this.onEscPress);
-  // }
-
   const onEscPress = event => {
     if (event.code === 'Escape') {
       onClose();
