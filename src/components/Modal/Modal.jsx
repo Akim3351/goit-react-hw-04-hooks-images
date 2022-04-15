@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import propTypes from 'prop-types';
@@ -16,13 +16,6 @@ const Modal = ({ onClose, link }) => {
       enableBodyScroll(modalRoot);
     };
   });
-  // componentDidMount() {
-  //   window.addEventListener('keydown', this.onEscPress);
-  // }
-
-  // componentWillUnmount() {
-  //   window.removeEventListener('keydown', this.onEscPress);
-  // }
 
   const onEscPress = event => {
     if (event.code === 'Escape') {
