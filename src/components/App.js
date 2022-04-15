@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,129 +10,107 @@ import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 import Notification from './Notification/Notification';
 
-class App extends Component {
-  state = {
-    searchQuery: '',
-    page: 1,
-    status: 'idle',
-    error: null,
-    result: [],
-    modalOpen: false,
-    largeImg: '',
-  };
+const App = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [largeImg, setLargeImg] = useState('');
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevQuery = prevState.searchQuery;
-    const nextQuery = this.state.searchQuery;
-    const prevPageNum = prevState.page;
-    const nextPageNum = this.state.page;
-    const prevImages = prevState.result;
-
-    if (prevQuery !== nextQuery || prevPageNum !== nextPageNum) {
-      fetchImages(nextQuery, nextPageNum)
+  useEffect(() => {
+    if (searchQuery !== '') {
+      fetchImages(searchQuery, page)
         .then(res => {
-          if (nextPageNum === 1) {
+          if (page === 1) {
             if (res.hits.length === 0) {
               toast.info('По Вашему запросу изображений не найдено');
-              this.setState({ result: [], status: 'idle' });
+              setResult([]);
+              setStatus('idle');
             } else {
               toast.success(
                 `По Вашему запросу найдено ${res.total} избражений`
               );
-              this.setState({ result: res.hits, status: 'resolved' });
-              if (this.state.result.length === res.total) {
-                this.setState({ status: 'endOfList' });
+              setResult(res.hits);
+              setStatus('resolved');
+              if (result.length === res.total) {
+                setStatus('endOfList');
               }
             }
           }
 
-          if (nextPageNum > 1) {
-            this.setState(() => ({
-              result: [...prevImages, ...res.hits],
-              status: 'resolved',
-            }));
-            if (this.state.result.length === res.total) {
+          if (page > 1) {
+            setResult(prevResult => [...result, ...res.hits]);
+            setStatus('resolved');
+
+            if (result.length === res.total) {
               toast.info('Достигнут конец списка');
-              this.setState({ status: 'endOfList' });
+              setStatus('endOfList');
             }
           }
         })
         .catch(error => {
-          this.setState({ error, status: 'rejected' });
+          setError(error);
+          setStatus('rejected');
         });
     }
-  }
+  }, [searchQuery, page]);
 
-  onSubmit = value => {
-    if (value === this.state.searchQuery) {
+  const onSubmit = value => {
+    if (value === searchQuery) {
       toast.info('Вы уже смотрите изображения по этому запросу');
       return;
     }
-    this.setState({ searchQuery: value, page: 1, status: 'pending' });
+    setSearchQuery(value);
+    setPage(1);
+    setStatus('pending');
   };
 
-  onLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
+  const onLoadMore = () => {
+    setPage(page + 1);
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
   };
 
-  onModalOpen = event => {
-    this.setState({
-      modalOpen: true,
-      largeImg: event.target.dataset.large,
-    });
+  const onModalOpen = event => {
+    setModalOpen(true);
+    setLargeImg(event.target.dataset.large);
   };
 
-  onModalClose = () => {
-    this.setState({
-      modalOpen: false,
-      largeImg: '',
-    });
+  const onModalClose = () => {
+    setModalOpen(false);
+    setLargeImg('');
   };
 
-  render() {
-    return (
-      <div className="App">
-        <Searchbar onSubmit={this.onSubmit} />
+  return (
+    <div className="App">
+      <Searchbar sendForm={onSubmit} />
 
-        {this.state.status === 'pending' && <Loader />}
+      {status === 'pending' && <Loader />}
 
-        {this.state.status === 'resolved' && (
-          <>
-            <ImageGallery
-              onModalOpen={this.onModalOpen}
-              hits={this.state.result}
-            />
-            <Button onLoadMore={this.onLoadMore} />
-            {this.state.modalOpen && (
-              <Modal onClose={this.onModalClose} link={this.state.largeImg} />
-            )}
-          </>
-        )}
+      {status === 'resolved' && (
+        <>
+          <ImageGallery onModalOpen={onModalOpen} hits={result} />
+          <Button onLoadMore={onLoadMore} />
+          {modalOpen && <Modal onClose={onModalClose} link={largeImg} />}
+        </>
+      )}
 
-        {this.state.status === 'endOfList' && (
-          <>
-            <ImageGallery
-              onModalOpen={this.onModalOpen}
-              hits={this.state.result}
-            />
-            {this.state.modalOpen && (
-              <Modal onClose={this.onModalClose} link={this.state.largeImg} />
-            )}
-          </>
-        )}
+      {status === 'endOfList' && (
+        <>
+          <ImageGallery onModalOpen={onModalOpen} hits={result} />
+          {modalOpen && <Modal onClose={onModalClose} link={largeImg} />}
+        </>
+      )}
 
-        {this.state.status === 'rejected' && (
-          <Notification error={this.state.error} />
-        )}
+      {status === 'rejected' && <Notification error={error} />}
 
-        <ToastContainer autoClose={2000} />
-      </div>
-    );
-  }
-}
+      <ToastContainer autoClose={2000} />
+    </div>
+  );
+};
 
 export default App;

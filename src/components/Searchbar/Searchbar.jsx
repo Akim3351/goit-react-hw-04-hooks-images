@@ -1,55 +1,51 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import css from './Searchbar.module.css';
 import propTypes from 'prop-types';
 import { ImSearch } from 'react-icons/im';
 import { toast } from 'react-toastify';
 
-class Searchbar extends Component {
-  state = {
-    searchQuery: '',
+const Searchbar = ({ sendForm }) => {
+  const [searchQuery, setsearchQuery] = useState('');
+
+  const onFormChange = event => {
+    setsearchQuery(event.currentTarget.value.toLowerCase());
   };
 
-  onFormChange = event => {
-    this.setState({ searchQuery: event.currentTarget.value.toLowerCase() });
-  };
-
-  onSubmit = event => {
+  const onFormSubmit = event => {
     event.preventDefault();
 
-    if (this.state.searchQuery.trim() === '') {
+    if (searchQuery.trim() === '') {
       toast.error('Введите запрос для поиска');
       return;
     }
 
-    this.props.onSubmit(this.state.searchQuery);
-    this.setState({ searchQuery: '' });
+    sendForm(searchQuery);
+    setsearchQuery('');
   };
 
-  render() {
-    return (
-      <header className={css.searchbar}>
-        <form className={css.form} onSubmit={this.onSubmit}>
-          <button type="submit" className={css.button}>
-            <ImSearch />
-          </button>
+  return (
+    <header className={css.searchbar}>
+      <form className={css.form} onSubmit={onFormSubmit}>
+        <button type="submit" className={css.button}>
+          <ImSearch />
+        </button>
 
-          <input
-            className={css.input}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.onFormChange}
-            value={this.state.searchQuery}
-          />
-        </form>
-      </header>
-    );
-  }
-}
+        <input
+          className={css.input}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={onFormChange}
+          value={searchQuery}
+        />
+      </form>
+    </header>
+  );
+};
 
 Searchbar.propTypes = {
-  onSubmit: propTypes.func.isRequired,
+  sendForm: propTypes.func.isRequired,
 };
 
 export default Searchbar;
