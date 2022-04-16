@@ -1,17 +1,17 @@
 import React from 'react';
-import css from './ImageGallery.module.css';
+import { Gallery } from './ImageGallery.styled';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import propTypes from 'prop-types';
 
 const ImageGallery = ({ onModalOpen, hits }) => {
   return (
-    <ul className={css.gallery}>
+    <Gallery>
       {hits.map(hit => {
         return (
           <ImageGalleryItem hit={hit} key={hit.id} onModalOpen={onModalOpen} />
         );
       })}
-    </ul>
+    </Gallery>
   );
 };
 

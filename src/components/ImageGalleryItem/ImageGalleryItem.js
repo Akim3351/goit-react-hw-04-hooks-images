@@ -1,17 +1,17 @@
 import React from 'react';
-import css from './ImageGalleryItem.module.css';
+import { GalleryItem, GalleryImg } from './ImageGalleryItem.styled';
 import propTypes from 'prop-types';
 
 const ImageGalleryItem = ({ hit, onModalOpen }) => {
   return (
-    <li className={css.gallery__item}>
-      <img
+    <GalleryItem>
+      <GalleryImg
         onClick={onModalOpen}
         data-large={hit.largeImageURL}
         src={hit.previewURL}
         alt={hit.tags}
       />
-    </li>
+    </GalleryItem>
   );
 };
 

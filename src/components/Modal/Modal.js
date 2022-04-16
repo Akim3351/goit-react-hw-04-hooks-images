@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import propTypes from 'prop-types';
-import css from './Modal.module.css';
+import { Overlay, ModalBody } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
@@ -29,11 +29,11 @@ const Modal = ({ onClose, link }) => {
   };
 
   return createPortal(
-    <div className={css.overlay} onClick={onBackdropClick}>
-      <div className={css.modal}>
+    <Overlay onClick={onBackdropClick}>
+      <ModalBody>
         <img src={link} alt="img" />
-      </div>
-    </div>,
+      </ModalBody>
+    </Overlay>,
     modalRoot
   );
 };

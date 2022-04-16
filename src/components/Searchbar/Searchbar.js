@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import css from './Searchbar.module.css';
+import { SearchbarHeader, SearchForm, Button, Input } from './Searchbar.styled';
 import propTypes from 'prop-types';
 import { ImSearch } from 'react-icons/im';
 import { toast } from 'react-toastify';
@@ -24,14 +24,13 @@ const Searchbar = ({ sendForm }) => {
   };
 
   return (
-    <header className={css.searchbar}>
-      <form className={css.form} onSubmit={onFormSubmit}>
-        <button type="submit" className={css.button}>
+    <SearchbarHeader>
+      <SearchForm onSubmit={onFormSubmit}>
+        <Button type="submit">
           <ImSearch />
-        </button>
+        </Button>
 
-        <input
-          className={css.input}
+        <Input
           type="text"
           autoComplete="off"
           autoFocus
@@ -39,8 +38,8 @@ const Searchbar = ({ sendForm }) => {
           onChange={onFormChange}
           value={searchQuery}
         />
-      </form>
-    </header>
+      </SearchForm>
+    </SearchbarHeader>
   );
 };
 
