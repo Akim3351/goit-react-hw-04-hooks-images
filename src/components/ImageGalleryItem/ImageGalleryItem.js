@@ -3,13 +3,14 @@ import { GalleryItem, GalleryImg } from './ImageGalleryItem.styled';
 import propTypes from 'prop-types';
 
 const ImageGalleryItem = ({ hit, onModalOpen }) => {
+  const { largeImageURL, previewURL, tags } = hit;
   return (
     <GalleryItem>
       <GalleryImg
         onClick={onModalOpen}
-        data-large={hit.largeImageURL}
-        src={hit.previewURL}
-        alt={hit.tags}
+        data-large={largeImageURL}
+        src={previewURL}
+        alt={tags}
       />
     </GalleryItem>
   );
@@ -18,6 +19,7 @@ const ImageGalleryItem = ({ hit, onModalOpen }) => {
 ImageGalleryItem.propTypes = {
   onModalOpen: propTypes.func.isRequired,
   hit: propTypes.shape({
+    largeImageURL: propTypes.string.isRequired,
     previewURL: propTypes.string.isRequired,
     tags: propTypes.string.isRequired,
   }),

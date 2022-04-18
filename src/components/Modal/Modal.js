@@ -8,28 +8,23 @@ const modalRoot = document.querySelector('#modal-root');
 
 const Modal = ({ onClose, link }) => {
   useEffect(() => {
-    window.addEventListener('keydown', onEscPress);
+    window.addEventListener('keydown', closeModal);
     disableBodyScroll(modalRoot);
 
     return () => {
-      window.removeEventListener('keydown', onEscPress);
+      window.removeEventListener('keydown', closeModal);
       enableBodyScroll(modalRoot);
     };
   });
-  const onEscPress = event => {
-    if (event.code === 'Escape') {
-      onClose();
-    }
-  };
 
-  const onBackdropClick = event => {
-    if (event.currentTarget === event.target) {
+  const closeModal = event => {
+    if (event.code === 'Escape' || event.currentTarget === event.target) {
       onClose();
     }
   };
 
   return createPortal(
-    <Overlay onClick={onBackdropClick}>
+    <Overlay onClick={closeModal}>
       <ModalBody>
         <img src={link} alt="img" />
       </ModalBody>

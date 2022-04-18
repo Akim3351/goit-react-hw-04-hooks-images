@@ -16,9 +16,11 @@ const ImageGallery = ({ onModalOpen, hits }) => {
 };
 
 ImageGallery.propTypes = {
+  onModalOpen: propTypes.func.isRequired,
   hits: propTypes.arrayOf(
     propTypes.shape({
       id: propTypes.number.isRequired,
+      largeImageURL: propTypes.string.isRequired,
       previewURL: propTypes.string.isRequired,
       tags: propTypes.string.isRequired,
     })

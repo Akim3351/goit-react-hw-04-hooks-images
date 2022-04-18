@@ -20,7 +20,8 @@ const Searchbar = ({ sendForm }) => {
     }
 
     sendForm(searchQuery);
-    setsearchQuery('');
+    // setsearchQuery('');
+    // не стоит чистить инпут после запроса, зачастую юзер не помнит что искал
   };
 
   return (

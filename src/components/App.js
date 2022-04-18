@@ -20,41 +20,40 @@ const App = () => {
   const [largeImg, setLargeImg] = useState('');
 
   useEffect(() => {
-    if (searchQuery !== '') {
-      fetchImages(searchQuery, page)
-        .then(res => {
-          if (page === 1) {
-            if (res.hits.length === 0) {
-              toast.info('По Вашему запросу изображений не найдено');
-              setResult([]);
-              setStatus('idle');
-            } else {
-              toast.success(
-                `По Вашему запросу найдено ${res.total} избражений`
-              );
-              setResult(res.hits);
-              setStatus('resolved');
-              if (result.length === res.total) {
-                setStatus('endOfList');
-              }
-            }
-          }
-
-          if (page > 1) {
-            setResult(prevResult => [...result, ...res.hits]);
-            setStatus('resolved');
-
-            if (result.length === res.total) {
-              toast.info('Достигнут конец списка');
-              setStatus('endOfList');
-            }
-          }
-        })
-        .catch(error => {
-          setError(error);
-          setStatus('rejected');
-        });
+    if (searchQuery === '') {
+      return;
     }
+    fetchImages(searchQuery, page)
+      .then(res => {
+        if (page === 1) {
+          if (res.hits.length === 0) {
+            toast.info('По Вашему запросу изображений не найдено');
+            setStatus('resolved');
+          } else {
+            toast.success(`По Вашему запросу найдено ${res.total} избражений`);
+            handleResult(result, res.hits);
+            if (res.hits.length === res.total) {
+              setStatus('endOfList');
+            } else {
+              setStatus('resolved');
+            }
+          }
+        }
+
+        if (page > 1) {
+          handleResult(result, res.hits);
+          setStatus('resolved');
+
+          if (result.length === res.total) {
+            toast.info('Достигнут конец списка');
+            setStatus('endOfList');
+          }
+        }
+      })
+      .catch(error => {
+        setError(error);
+        setStatus('rejected');
+      });
     // eslint-disable-next-line
   }, [searchQuery, page]);
 
@@ -65,6 +64,7 @@ const App = () => {
     }
     setSearchQuery(value);
     setPage(1);
+    setResult([]);
     setStatus('pending');
   };
 
@@ -84,6 +84,14 @@ const App = () => {
   const onModalClose = () => {
     setModalOpen(false);
     setLargeImg('');
+  };
+
+  const handleResult = (prevArray, newArray) => {
+    if (prevArray.length === 0) {
+      setResult([...newArray]);
+    } else {
+      setResult([...prevArray, ...newArray]);
+    }
   };
 
   return (
