@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,8 +54,7 @@ const App = () => {
         setError(error);
         setStatus('rejected');
       });
-    // eslint-disable-next-line
-  }, [searchQuery, page]);
+  }, [searchQuery, result, page]);
 
   const onSubmit = value => {
     if (value === searchQuery) {
@@ -122,4 +121,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default memo(App);
