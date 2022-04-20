@@ -27,29 +27,33 @@ const App = () => {
       try {
         const res = await fetchImages(searchQuery, page);
 
-        if (page === 1) {
-          if (res.hits.length === 0) {
-            toast.info('По Вашему запросу изображений не найдено');
-            setStatus('idle');
-          } else {
-            toast.success(`По Вашему запросу найдено ${res.total} избражений`);
-            setResult([...res.hits]);
-            if (res.hits.length === res.total) {
-              setStatus('endOfList');
-            } else {
-              setStatus('resolved');
-            }
-          }
-
+        if (page === 1 && res.hits.length === 0) {
+          toast.info('По Вашему запросу изображений не найдено');
+          setStatus('idle');
           return;
         }
 
-        setResult(prevResult => [...prevResult, ...res.hits]);
-        setStatus('resolved');
+        if (page === 1 && res.hits.length !== 0) {
+          toast.success(`По Вашему запросу найдено ${res.total} избражений`);
+          setResult([...res.hits]);
+          if (res.hits.length === res.total) {
+            setStatus('endOfList');
+          } else {
+            setStatus('resolved');
+          }
+          return;
+        }
 
-        if (res.length === res.total) {
-          toast.info('Достигнут конец списка');
+        if (page !== 1 && res.hits.length === 0) {
+          toast.info('Извините, больше изображений не найдено');
           setStatus('endOfList');
+          return;
+        }
+
+        if (page !== 1 && res.hits.length !== 0) {
+          setResult(prevResult => [...prevResult, ...res.hits]);
+          setStatus('resolved');
+          return;
         }
       } catch (error) {
         setError(error);
@@ -95,14 +99,6 @@ const App = () => {
     setModalOpen(false);
     setLargeImg('');
   };
-
-  // const handleResult = (prevArray, newArray) => {
-  //   if (prevArray.length === 0) {
-  //     setResult([...newArray]);
-  //   } else {
-  //     setResult([...prevArray, ...newArray]);
-  //   }
-  // };
 
   return (
     <div className="App">
