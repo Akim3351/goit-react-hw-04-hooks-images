@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,44 +23,55 @@ const App = () => {
     if (searchQuery === '') {
       return;
     }
-    fetchImages(searchQuery, page)
-      .then(res => {
+    async function getImages() {
+      try {
+        const res = await fetchImages(searchQuery, page);
+
         if (page === 1) {
           if (res.hits.length === 0) {
             toast.info('По Вашему запросу изображений не найдено');
-            setStatus('resolved');
+            setStatus('idle');
           } else {
             toast.success(`По Вашему запросу найдено ${res.total} избражений`);
-            handleResult(result, res.hits);
+            setResult([...res.hits]);
             if (res.hits.length === res.total) {
               setStatus('endOfList');
             } else {
               setStatus('resolved');
             }
           }
+
+          return;
         }
 
-        if (page > 1) {
-          handleResult(result, res.hits);
-          setStatus('resolved');
+        setResult(prevResult => [...prevResult, ...res.hits]);
+        setStatus('resolved');
 
-          if (result.length === res.total) {
-            toast.info('Достигнут конец списка');
-            setStatus('endOfList');
-          }
+        if (res.length === res.total) {
+          toast.info('Достигнут конец списка');
+          setStatus('endOfList');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         setError(error);
         setStatus('rejected');
-      });
-  }, [searchQuery, result, page]);
+      }
+    }
+    getImages();
+  }, [searchQuery, page]);
 
   const onSubmit = value => {
-    if (value === searchQuery) {
+    if (value === searchQuery && result.length > 0) {
       toast.info('Вы уже смотрите изображения по этому запросу');
       return;
     }
+
+    if (value === searchQuery && result.length === 0) {
+      toast.info(
+        'Вы уже искали изображения по этому запросу - ничего не найдено'
+      );
+      return;
+    }
+
     setSearchQuery(value);
     setPage(1);
     setResult([]);
@@ -85,13 +96,13 @@ const App = () => {
     setLargeImg('');
   };
 
-  const handleResult = (prevArray, newArray) => {
-    if (prevArray.length === 0) {
-      setResult([...newArray]);
-    } else {
-      setResult([...prevArray, ...newArray]);
-    }
-  };
+  // const handleResult = (prevArray, newArray) => {
+  //   if (prevArray.length === 0) {
+  //     setResult([...newArray]);
+  //   } else {
+  //     setResult([...prevArray, ...newArray]);
+  //   }
+  // };
 
   return (
     <div className="App">
@@ -121,4 +132,4 @@ const App = () => {
   );
 };
 
-export default memo(App);
+export default App;
